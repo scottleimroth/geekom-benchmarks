@@ -1,0 +1,144 @@
+# Task / prompt definitions consumed by the runners. Editing prompts here does
+# not require touching code. Coding tasks have executable tests and live in the
+# coding runner + test_assets/coding (referenced by id here for documentation).
+
+speed:
+  max_tokens: 512
+  warmup_tokens: 8          # warm-up call, EXCLUDED from all averages
+  prompts:
+    - id: short_fact
+      kind: short
+      text: "Explain what a CPU cache is and why it matters, in 3 sentences."
+    - id: medium_explain
+      kind: medium
+      text: >-
+        Write a ~500 word technical explanation of how unified memory
+        architecture in an AMD Ryzen AI APU affects local LLM inference
+        throughput compared with a discrete GPU. Cover memory bandwidth,
+        the absence of host<->device copies, and quantization.
+    - id: long_reason
+      kind: long
+      # The runner prepends a synthetic ~2-3k token document to this instruction.
+      text: >-
+        Summarize the document above in 8 bullet points, then state the single
+        most important constraint it implies for someone running 30B-class MoE
+        models on integrated graphics. Do not invent facts not in the document.
+    - id: coding_like
+      kind: coding
+      text: >-
+        Write a Python function `dedupe_preserve_order(items)` that removes
+        duplicates while preserving first-seen order, then explain its time
+        complexity in two sentences.
+    - id: agent_like
+      kind: agent
+      text: >-
+        Produce a structured step-by-step plan (numbered) to safely migrate
+        10,000 PDF files into a deduplicated archive on Windows, given the
+        constraints: max path length 260 chars, one canonical disposition per
+        file, no whole-folder deletion. Output only the plan.
+
+long_context:
+  # Start conservative; only escalate where the model's context_window allows.
+  lengths: [4000, 8000, 16000]
+  max_tokens: 256
+  # A unique fact is injected at begin/middle/end; the model must retrieve it.
+  needle_positions: [begin, middle, end]
+
+structured_output:
+  max_tokens: 512
+  cases:
+    - id: flat_json
+      kind: produce
+      instruction: >-
+        Return ONLY a JSON object with keys: name (string), age (integer),
+        active (boolean). Use name "Ada", age 36, active true. No prose, no code fences.
+      schema:
+        type: object
+        required: [name, age, active]
+        properties:
+          name: {type: string}
+          age: {type: integer}
+          active: {type: boolean}
+        additionalProperties: false
+    - id: nested_json
+      kind: produce
+      instruction: >-
+        Return ONLY JSON: an object with key "user" (object with id:int,
+        roles: array of strings) and key "ok" (boolean true). Use id 7,
+        roles ["admin","editor"]. No prose.
+      schema:
+        type: object
+        required: [user, ok]
+        properties:
+          user:
+            type: object
+            required: [id, roles]
+            properties:
+              id: {type: integer}
+              roles: {type: array, items: {type: string}}
+          ok: {type: boolean}
+    - id: extract_fields
+      kind: extract
+      instruction: >-
+        From this text extract JSON {title, year, journal}: 'The paper
+        "Cardiac Timing and Cognitive Control" appeared in the Journal of
+        Testing in 2021.' Return ONLY the JSON object.
+      schema:
+        type: object
+        required: [title, year, journal]
+        properties:
+          title: {type: string}
+          year: {type: integer}
+          journal: {type: string}
+      expect:
+        year: 2021
+    - id: enum_constraint
+      kind: produce
+      instruction: >-
+        Return ONLY JSON {status} where status is exactly one of
+        "open","closed","pending". The item is not yet resolved and awaiting
+        review, so choose the best fit. No prose.
+      schema:
+        type: object
+        required: [status]
+        properties:
+          status: {type: string, enum: [open, closed, pending]}
+      expect:
+        status: pending
+    - id: repair_json
+      kind: repair
+      instruction: >-
+        The following is invalid JSON. Return ONLY a corrected, valid version
+        with the same intent: {'name': 'Ada', 'age': 36,}
+      schema:
+        type: object
+        required: [name, age]
+        properties:
+          name: {type: string}
+          age: {type: integer}
+
+tool_reliability:
+  trials: 20
+  modes: [parallel, nopar, strict]
+  # papers: title -> publication year (ground truth)
+  papers:
+    "Alpha Oscillations in Auditory Attention": 2017
+    "Cardiac Timing and Cognitive Control": 2021
+    "The Startle Reflex During Quiet Breathing": 1998
+    "Event-Related Potentials in Visual Search": 2006
+    "Autonomic Measures During Resting EEG": 2013
+
+vision:
+  # The vision benchmark is now MANIFEST-DRIVEN. Tasks/questions/expected answers
+  # live in test_assets/vision/manifest.json, generated deterministically by
+  # `python scripts/prepare_vision_assets.py`. The runner
+  # (geekom_benchmarks/runners/vision.py) reads that manifest, not this section.
+  # See docs/vision_benchmarks.md.
+  max_tokens: 384
+  manifest: test_assets/vision/manifest.json
+
+agent_workflow:
+  max_tokens: 768
+  # The agent benchmark composes plan -> tool -> file edit -> test -> verify.
+  paper_title: "Cardiac Timing and Cognitive Control"
+  expected_year: 2021

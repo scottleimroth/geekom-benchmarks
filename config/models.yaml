@@ -1,0 +1,188 @@
+# Model catalog for geekom-benchmarks.
+#
+# `id` MUST be the exact Lemonade model id (verified against
+# GET http://127.0.0.1:13305/api/v1/models on 2026-06-25). Disabled models keep
+# a skip_reason and, where inferable, a pull_command.
+#
+# uses tags drive which benchmarks a model participates in:
+#   daily_chat | coding | tool_agent | reasoning | vision | fast_small
+#
+# arch: dense | moe     provider/runtime is Lemonade (llama.cpp Vulkan) for all.
+
+defaults:
+  provider: lemonade
+  endpoint: http://127.0.0.1:13305/api/v1
+  backend: llamacpp:vulkan
+
+models:
+  # ---- small sanity / smoke-test model -------------------------------------
+  - id: Gemma-4-E2B-it-GGUF
+    display_name: gemma-4-E2B-it
+    family: gemma-4
+    param_size: 2
+    arch: moe
+    quant: Q4_K_M
+    context_window: 131072
+    uses: [fast_small, daily_chat, vision]
+    notes: >-
+      Smallest local model; default smoke-test / sanity model. Vision-capable
+      (mmproj present). Use for fast pipeline validation, not as a quality bar.
+    enabled: true
+
+  # ---- MoE workhorses ------------------------------------------------------
+  - id: Qwen3-30B-A3B-GGUF
+    display_name: Qwen3-30B-A3B
+    family: qwen3
+    param_size: 30
+    arch: moe
+    quant: Q4_0
+    context_window: 40960
+    uses: [daily_chat, reasoning, tool_agent]
+    notes: >-
+      Fast MoE (~28 tok/s warm). RELIABLE TOOL USE ONLY UNDER STRICT STAGED
+      ORCHESTRATION — degrades to ~12-14/20 with both tools exposed at once.
+      Failure mode is "saved wrong year", not malformed JSON. Recipe ctx_size 8192.
+    enabled: true
+
+  - id: nvidia_Nemotron-Cascade-2-30B-A3B-GGUF-Q4_K_M
+    display_name: Nemotron-Cascade-2-30B-A3B
+    family: nemotron-cascade-2
+    param_size: 30
+    arch: moe
+    quant: Q4_K_M
+    context_window: 1048576
+    uses: [tool_agent, reasoning, daily_chat]
+    notes: >-
+      Best current local model for tool-heavy agent workflows on this box:
+      60/60 across parallel/nopar/strict tool modes. ~21 tok/s. 1M context window.
+      Default recommendation for autonomous agent loops.
+    enabled: true
+
+  - id: Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M
+    display_name: Qwen3.6-35B-A3B
+    family: qwen3.6
+    param_size: 35
+    arch: moe
+    quant: UD-Q4_K_M
+    context_window: 262144
+    uses: [daily_chat, reasoning, tool_agent]
+    notes: Largest MoE here (~18 tok/s). Strong reasoning, still practical.
+    enabled: true
+
+  - id: gpt-oss-20b-mxfp4-GGUF
+    display_name: gpt-oss-20b
+    family: gpt-oss
+    param_size: 20
+    arch: dense
+    quant: mxfp4
+    context_window: 131072
+    uses: [daily_chat, reasoning, tool_agent]
+    notes: >-
+      Throughput leader on this box (~22.6 tok/s). NOTE: the Lemonade id is
+      `gpt-oss-20b-mxfp4-GGUF`, NOT the `openai_gpt-oss-20b-GGUF:mxfp4` string
+      used in earlier notes.
+    enabled: true
+
+  # ---- coding ---------------------------------------------------------------
+  - id: Qwen3-Coder-30B-A3B-Instruct-GGUF-Q4_K_M
+    display_name: Qwen3-Coder-30B-A3B
+    family: qwen3-coder
+    param_size: 30
+    arch: moe
+    quant: Q4_K_M
+    context_window: 262144
+    uses: [coding, tool_agent]
+    notes: Purpose-built 30B MoE coding model. Primary coding-benchmark target.
+    enabled: true
+
+  # ---- gemma dense/MoE chat & vision ---------------------------------------
+  - id: gemma-4-E4B-it-GGUF:UD-Q4_K_XL
+    display_name: gemma-4-E4B-it
+    family: gemma-4
+    param_size: 4
+    arch: moe
+    quant: UD-Q4_K_XL
+    context_window: 131072
+    uses: [fast_small, daily_chat]
+    notes: Small, ~15 tok/s. Good cheap assistant.
+    enabled: true
+
+  - id: gemma-4-12b-it-GGUF-Q4_K_M
+    display_name: gemma-4-12b-it
+    family: gemma-4
+    param_size: 12
+    arch: dense
+    quant: Q4_K_M
+    context_window: 262144
+    uses: [daily_chat, vision]
+    notes: >-
+      12B dense, ~8.6 tok/s — slower; vision-capable (mmproj). Recipe ctx_size 8192.
+      API text loads failed on 2026-06-27 with Lemonade model_load_error; direct
+      GGUF llama-bench remains valid, but external API suites use the text-only
+      catalog entry below until this Lemonade recipe is fixed.
+    enabled: false
+    skip_reason: Lemonade API load failed on 2026-06-27; use gemma-4-12b-it-text-Q4_K_M for text/API suites.
+
+  # ---- vision ---------------------------------------------------------------
+  - id: Qwen3-VL-8B-Instruct-GGUF
+    display_name: Qwen3-VL-8B
+    family: qwen3-vl
+    param_size: 8
+    arch: dense
+    quant: Q4_K_M
+    context_window: 262144
+    uses: [vision, daily_chat]
+    notes: Primary vision-benchmark target (mmproj present).
+    enabled: true
+
+  - id: allenai_olmOCR-2-7B-1025-GGUF-Q4_K_M
+    display_name: olmOCR-2-7B
+    family: olmocr
+    param_size: 7
+    arch: dense
+    quant: Q4_K_M
+    context_window: 128000
+    uses: [vision]
+    notes: OCR-specialized vision model; secondary vision/OCR target.
+    enabled: true
+
+  # ---- dense large (slow; kept for contrast) -------------------------------
+  - id: Qwen3.5-27B-GGUF:Q4_0
+    display_name: Qwen3.5-27B
+    family: qwen3.5
+    param_size: 27
+    arch: dense
+    quant: Q4_0
+    context_window: 262144
+    uses: [reasoning]
+    notes: >-
+      Dense 27B, ~4 tok/s — NOT a default. Kept enabled only to demonstrate the
+      dense-vs-MoE gap on this hardware. Exclude from routine sweeps.
+    enabled: true
+
+  # ---- present in Lemonade but not part of routine sweeps ------------------
+  - id: gemma-4-12b-it-text-Q4_K_M
+    display_name: gemma-4-12b-it-text
+    family: gemma-4
+    param_size: 12
+    arch: dense
+    quant: Q4_K_M
+    context_window: 262144
+    uses: [daily_chat]
+    notes: >-
+      Text-only variant of gemma-4-12b; enabled on 2026-06-27 because the
+      vision-capable Lemonade recipe failed API load during canonical external
+      benchmark runs.
+    enabled: true
+
+  - id: gemma-4-E4B-it-OBLITERATED-Q4_K_M
+    display_name: gemma-4-E4B-OBLITERATED
+    family: gemma-4
+    param_size: 4
+    arch: moe
+    quant: Q4_K_M
+    context_window: 131072
+    uses: [daily_chat, vision]
+    notes: Uncensored finetune; excluded from default benchmarks.
+    enabled: false
+    skip_reason: Finetune not relevant to capability benchmarking; enable manually if needed.

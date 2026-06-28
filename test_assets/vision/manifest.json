@@ -1,0 +1,274 @@
+{
+  "schema_version": "1.0",
+  "generator": "scripts/prepare_vision_assets.py",
+  "default_source": "synthetic",
+  "synthetic_image_count": 6,
+  "question_count": 13,
+  "items": [
+    {
+      "asset_id": "ocr_text",
+      "file_path": "synthetic/ocr_text.png",
+      "asset_type": "ocr_text",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the order total shown in the image?",
+      "expected_answer": "$47.83",
+      "accepted_answer_patterns": [
+        "\\$?\\s?47\\.83"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "OCR of a clear printed amount."
+    },
+    {
+      "asset_id": "ocr_text",
+      "file_path": "synthetic/ocr_text.png",
+      "asset_type": "ocr_text",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the reference code shown in the image?",
+      "expected_answer": "AX-2047",
+      "accepted_answer_patterns": [
+        "AX[\\s-]?2047"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "OCR of an alphanumeric code."
+    },
+    {
+      "asset_id": "invoice",
+      "file_path": "synthetic/invoice.png",
+      "asset_type": "document",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the invoice number?",
+      "expected_answer": "INV-100245",
+      "accepted_answer_patterns": [
+        "INV[\\s-]?100245"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Document field extraction."
+    },
+    {
+      "asset_id": "invoice",
+      "file_path": "synthetic/invoice.png",
+      "asset_type": "document",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the invoice date?",
+      "expected_answer": "2026-03-14",
+      "accepted_answer_patterns": [
+        "2026[-/]03[-/]14",
+        "March\\s+14,?\\s+2026"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Accepts ISO or written date."
+    },
+    {
+      "asset_id": "invoice",
+      "file_path": "synthetic/invoice.png",
+      "asset_type": "document",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the customer name?",
+      "expected_answer": "Acme Robotics Ltd",
+      "accepted_answer_patterns": [
+        "Acme\\s+Robotics"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Customer field."
+    },
+    {
+      "asset_id": "invoice",
+      "file_path": "synthetic/invoice.png",
+      "asset_type": "document",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the total amount due?",
+      "expected_answer": "$1,284.50",
+      "accepted_answer_patterns": [
+        "\\$?\\s?1,?284\\.50"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Total field (not subtotal)."
+    },
+    {
+      "asset_id": "bar_chart",
+      "file_path": "synthetic/bar_chart.png",
+      "asset_type": "chart",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the value of bar B?",
+      "expected_answer": "19",
+      "accepted_answer_patterns": [
+        "\\b19\\b"
+      ],
+      "scoring_method": "numeric",
+      "notes": "Labeled bar value."
+    },
+    {
+      "asset_id": "bar_chart",
+      "file_path": "synthetic/bar_chart.png",
+      "asset_type": "chart",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "Which category has the highest value? Answer with the single letter.",
+      "expected_answer": "B",
+      "accepted_answer_patterns": [
+        "\\bB\\b"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Argmax over A=12,B=19,C=7."
+    },
+    {
+      "asset_id": "bar_chart",
+      "file_path": "synthetic/bar_chart.png",
+      "asset_type": "chart",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "How many bars are in the chart? Answer with a single integer.",
+      "expected_answer": "3",
+      "accepted_answer_patterns": [
+        "\\b3\\b"
+      ],
+      "scoring_method": "numeric",
+      "notes": "Three categories A,B,C."
+    },
+    {
+      "asset_id": "ui_settings",
+      "file_path": "synthetic/ui_settings.png",
+      "asset_type": "ui",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "List the three buttons at the bottom of this window.",
+      "expected_answer": "Save, Cancel, Apply",
+      "accepted_answer_patterns": [
+        "Save",
+        "Cancel",
+        "Apply"
+      ],
+      "scoring_method": "contains_all",
+      "notes": "GUI grounding: all three button labels must appear."
+    },
+    {
+      "asset_id": "ui_settings",
+      "file_path": "synthetic/ui_settings.png",
+      "asset_type": "ui",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "What is the title of this window?",
+      "expected_answer": "Settings",
+      "accepted_answer_patterns": [
+        "\\bSettings\\b"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Window title."
+    },
+    {
+      "asset_id": "ui_settings",
+      "file_path": "synthetic/ui_settings.png",
+      "asset_type": "ui",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "Which button would discard the changes? Answer with the button label.",
+      "expected_answer": "Cancel",
+      "accepted_answer_patterns": [
+        "\\bCancel\\b"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Semantic GUI reasoning."
+    },
+    {
+      "asset_id": "compare_status",
+      "file_path": "synthetic/compare_a.png",
+      "asset_type": "comparison",
+      "source_type": "synthetic",
+      "license": "generated_by_repo",
+      "question": "These two images are identical except for one element. What is the difference between the first and second image?",
+      "expected_answer": "The status changed from ONLINE (green) to OFFLINE (red).",
+      "accepted_answer_patterns": [
+        "offline",
+        "\\bred\\b",
+        "status",
+        "colou?r"
+      ],
+      "scoring_method": "regex_any",
+      "notes": "Controlled diff: status badge ONLINE/green -> OFFLINE/red; everything else identical. Passes if the changed element is identified.",
+      "file_paths": [
+        "synthetic/compare_a.png",
+        "synthetic/compare_b.png"
+      ]
+    }
+  ],
+  "standard_targets": [
+    {
+      "name": "TextVQA",
+      "task": "OCR / text-in-image VQA",
+      "url": "https://textvqa.org/",
+      "hf": "facebook/textvqa",
+      "license": "CC BY 4.0 (verify per release)",
+      "notes": "Reading text in natural images to answer questions.",
+      "available": false,
+      "skip_reason": "license/redistribution not yet verified for vendoring samples"
+    },
+    {
+      "name": "DocVQA",
+      "task": "Document VQA",
+      "url": "https://www.docvqa.org/",
+      "hf": "lmms-lab/DocVQA",
+      "license": "research-use; registration may be required",
+      "notes": "QA over scanned documents/forms.",
+      "available": false,
+      "skip_reason": "access/registration + redistribution terms unverified"
+    },
+    {
+      "name": "ChartQA",
+      "task": "Chart reasoning QA",
+      "url": "https://github.com/vis-nlp/ChartQA",
+      "hf": "HuggingFaceM4/ChartQA",
+      "license": "GPL-3.0 / per-repo (verify)",
+      "notes": "Questions over bar/line/pie charts.",
+      "available": false,
+      "skip_reason": "license verification pending"
+    },
+    {
+      "name": "OCRBench",
+      "task": "OCR-oriented evaluation",
+      "url": "https://github.com/Yuliang-Liu/MultimodalOCR",
+      "hf": "echo840/OCRBench",
+      "license": "per-repo (verify)",
+      "notes": "Aggregated OCR capability benchmark.",
+      "available": false,
+      "skip_reason": "license verification pending"
+    },
+    {
+      "name": "ScreenSpot",
+      "task": "GUI/screenshot grounding",
+      "url": "https://github.com/njucckevin/SeeClick",
+      "hf": "rootsautomation/ScreenSpot",
+      "license": "per-repo (verify); ScreenSpot-Pro separate terms",
+      "notes": "Locate UI elements from instructions (and ScreenSpot-Pro).",
+      "available": false,
+      "skip_reason": "license verification pending"
+    },
+    {
+      "name": "MMMU",
+      "task": "Multimodal reasoning (college-level)",
+      "url": "https://mmmu-benchmark.github.io/",
+      "hf": "MMMU/MMMU",
+      "license": "Apache-2.0 / per-subject (verify)",
+      "notes": "Broad multi-discipline multimodal reasoning.",
+      "available": false,
+      "skip_reason": "size + per-subject license verification pending"
+    },
+    {
+      "name": "MathVista",
+      "task": "Multimodal math reasoning",
+      "url": "https://mathvista.github.io/",
+      "hf": "AI4Math/MathVista",
+      "license": "CC BY-SA 4.0 (verify)",
+      "notes": "Visual math problem solving.",
+      "available": false,
+      "skip_reason": "license verification pending"
+    }
+  ],
+  "policy": "synthetic-only by default; standard samples require explicit opt-in with full provenance (name/split/id/url/license) or are skipped."
+}

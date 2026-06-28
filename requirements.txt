@@ -1,0 +1,10 @@
+# geekom-benchmarks runtime deps. Python >= 3.9 (tested on 3.11.9).
+# The suite degrades gracefully if optional deps are missing.
+requests>=2.28      # OpenAI-compatible HTTP client
+PyYAML>=6.0         # config loading
+psutil>=5.9         # RAM/CPU/process metrics
+# --- optional: vision asset generation (scripts/prepare_vision_assets.py) ---
+# Needed only to (re)generate test_assets/vision/* synthetic fixtures.
+# Pillow>=10.0
+# matplotlib>=3.7
+# numpy>=1.24

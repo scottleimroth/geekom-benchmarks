@@ -1,0 +1,29 @@
+# Benchmark data files (can be large)
+*.gguf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local/private benchmark byproducts
+.cache/
+logs/
+tmp/
+icl_inference_output/
+results/*
+!results/summary/
+results/summary/*
+!results/summary/*.md
+results/external/
+results/archive/
+results/raw/
+results/reports/
+results/summary/*.json
+results/summary/*.csv
+results/raw/**/scratch/
+*.tmp

@@ -1,0 +1,43 @@
+# Reference hardware profile. The GEEKOM A9 Max is the canonical target; other
+# hosts can add their own profile and select it via the HW_PROFILE env var later.
+# These are declared facts about the box, not measured at runtime — the
+# environment check measures and cross-checks what it can.
+
+active_profile: geekom_a9_max
+
+profiles:
+  geekom_a9_max:
+    label: GEEKOM A9 Max
+    # Keep the real private hostname out of the public repo. Set
+    # GEEKOM_BENCHMARK_HOSTNAME locally to enforce a specific host.
+    expected_hostname: ""
+    os: Windows 11 Pro 64-bit
+    cpu: AMD Ryzen AI 9 HX 370 (Strix Point, Zen5, 12C/24T)
+    igpu: AMD Radeon 890M (16 CU, RDNA 3.5)
+    npu: AMD Ryzen AI / XDNA2 NPU (~50 TOPS)
+    memory_gb: 32
+    memory_type: LPDDR5X (unified)
+    memory_note: >-
+      Unified memory shared between CPU and iGPU; Lemonade/llama.cpp uses the
+      Vulkan iGPU backend. The XDNA2 NPU is NOT used by the current GGUF runs.
+    runtime: Lemonade (llama.cpp, Vulkan backend)
+    endpoint: http://127.0.0.1:13305/api/v1
+    baseline:
+      label: AMD Radeon 780M (Hawk Point, RDNA 3, Linux + ROCm)
+      data_file: data/780m-leaderboard.json
+
+# Safety: where destructive benchmark work is allowed to run. The coding and
+# agent runners execute model-generated code and edit files; they do so ONLY in
+# a sibling temp directory OUTSIDE the tracked repo, so nothing destructive can
+# be committed. These paths are declared here for transparency; the runners
+# compute them as REPO_ROOT.parent / "geekom-benchmarks.tmp".
+safety:
+  destructive_workspace_root: "<repo_parent>/geekom-benchmarks.tmp"
+  coding_workspace: "<repo_parent>/geekom-benchmarks.tmp/coding_<run_id>/<task>"
+  agent_workspace: "<repo_parent>/geekom-benchmarks.tmp/agent_<run_id>"
+  inside_repo_destructive: false   # nothing destructive is written inside the repo
+  notes: >-
+    The tool-reliability benchmark writes harmless create-only note files under
+    results/raw/<category>/scratch/ (gitignored). All code execution is bounded
+    by a 30s timeout, a static dangerous-token scan, and cwd pinned to the task
+    dir. Never benchmark on the Pi; compute runs on the GEEKOM only.
